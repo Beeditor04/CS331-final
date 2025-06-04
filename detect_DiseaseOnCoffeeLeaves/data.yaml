@@ -1,0 +1,9 @@
+names:
+- dom rong
+- nam ri sat
+- phan trang
+- sau ve bua
+nc: 4
+train: /content/nhan_dien_benh_tren_la_ca_phe-2/train/images
+val: /content/nhan_dien_benh_tren_la_ca_phe-2/valid/images
+test: /content/nhan_dien_benh_tren_la_ca_phe-2/test/images
