@@ -1,0 +1,7 @@
+# file
+*.pt
+.env
+*.zip
+
+# folder
+__pycache__/
