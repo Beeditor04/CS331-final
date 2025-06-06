@@ -1,10 +1,9 @@
 from ultralytics import YOLO
 import cv2
 import yaml
-
 def detect_leaf_disease(image_path,
-                        model_path='./detect_DiseaseOnCoffeeLeaves/weights/best.pt',
-                        yaml_path='./detect_DiseaseOnCoffeeLeaves/data.yaml'):
+                        model_path='./weights/best.pt'
+                        ):
     """
     Nhận diện bệnh lá cà phê từ một ảnh đầu vào sử dụng mô hình YOLO đã huấn luyện.
 
@@ -16,10 +15,6 @@ def detect_leaf_disease(image_path,
     Returns:
         result_image (np.ndarray): Ảnh đã được vẽ kết quả.
     """
-    # Load class names từ YAML
-    with open(yaml_path, 'r') as f:
-        data = yaml.safe_load(f)
-    class_names = data['names']
 
     # Gán màu cho từng class
     color_map = {
@@ -40,13 +35,13 @@ def detect_leaf_disease(image_path,
 
     # Inference
     results = model(image_rgb)[0]
+    label_dict = results.names
 
     # Vẽ kết quả lên ảnh gốc
     for box in results.boxes:
         x1, y1, x2, y2 = map(int, box.xyxy[0])
         conf = float(box.conf[0])
-        cls = int(box.cls[0])
-        class_name = class_names[cls]
+        class_name = label_dict[box.cls[0].item()]
         label = f"{class_name}: {conf:.2f}"
 
         # Chọn màu theo class
@@ -59,15 +54,59 @@ def detect_leaf_disease(image_path,
 
     return image  # Trả về ảnh kết quả (BGR)
 
+def detect_leaf_disease_dict(image_path,
+                        model_path='./weights/best.pt'
+                        ):
+    """
+    Nhận diện bệnh lá cà phê từ một ảnh đầu vào sử dụng mô hình YOLO đã huấn luyện.
+
+    Params:
+        image_path (str): Đường dẫn ảnh cần nhận diện.
+        model_path (str): Đường dẫn model YOLO (.pt).
+        yaml_path (str): Đường dẫn file YAML chứa class names.
+
+    Returns:
+        dict: inference results containing bounding boxes and class labels.
+    """
+    # Load model YOLO
+    model = YOLO(model_path)
+
+    # Đọc ảnh và chuyển sang RGB
+    image = cv2.imread(image_path)
+    if image is None:
+        raise ValueError(f"Không thể đọc ảnh từ đường dẫn: {image_path}")
+    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+    # Inference
+    results = model(image_rgb)[0]
+
+    # Predict with the model
+    results = model(image_rgb)[0]  
+    label_dict = results.names
+    # construct results for llm 
+    results_dict = {
+        "boxes": [],
+        "labels": []
+    }
+    for box in results.boxes:
+        results_dict["boxes"].append({
+            "x1": int(box.xyxy[0][0]),
+            "y1": int(box.xyxy[0][1]),
+            "x2": int(box.xyxy[0][2]),
+            "y2": int(box.xyxy[0][3])
+        })
+        results_dict["labels"].append(label_dict[box.cls[0].item()])
+    return results_dict
+
 # run a sample
 if __name__ == "__main__":
-    image_path = './detect_DiseaseOnCoffeeLeaves/sample/image_leaves.jpg'
+    image_path = './sample/image_leaves.jpg'
 
     # Gọi hàm detect
+    # result_dict = detect_leaf_disease_dict(image_path)
     result_image = detect_leaf_disease(image_path)
-
     # Hiển thị kết quả
-    # cv2_imshow(result_image)
-
-    # Lưu kết quả
-    cv2.imwrite('./detect_DiseaseOnCoffeeLeaves/detected_leaf.jpg', result_image)
+    cv2.imshow('Coffee Leaf Disease Detection', result_image)
+    cv2.waitKey(0)  # Wait for a key press
+    cv2.destroyAllWindows()  # Close all windows
+    # print(result_dict)
