@@ -13,9 +13,9 @@ def detect_coffee_labels(img: np.ndarray) -> dict:
         dict: Inference results containing bounding boxes and class labels
     """
     try:
-        model = YOLO('./best.pt') 
+        model = YOLO('./best_maturity_detection.pt') 
     except Exception as e:
-        model = YOLO('yolov8n.pt')  # Fallback to a default model if loading fails
+        model = YOLO('yolov11n.pt')  # Fallback to a default model if loading fails
     #? Note: for future, i don't fucking use ultralytics, goonna try sth else
     
     model.conf = 0.5
