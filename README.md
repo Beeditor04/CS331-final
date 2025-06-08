@@ -14,4 +14,6 @@
 
 ```
 
-# II. Usage
+# II. Info
+- Kaggle link of this project (dataset, pretrained model,..): https://www.kaggle.com/datasets/beeditor/cs331-final-pretrained-dataset/data
+

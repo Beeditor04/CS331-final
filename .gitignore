@@ -175,3 +175,10 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+# file
+*.pt
+.env
+*.zip
+
+# folder
+__pycache__/

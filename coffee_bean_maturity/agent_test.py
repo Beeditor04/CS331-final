@@ -49,7 +49,7 @@ def coffee_detection_tools(image_path: str) -> str:
         for label in results['labels']:
             label_counts[label] = label_counts.get(label, 0) + 1
         
-        formatted_result += f"\nSum{len(results['labels'])} - Distribution:\n"
+        formatted_result += f"\nTotal beans: {len(results['labels'])} - Distribution:\n"
         for label, count in label_counts.items():
             formatted_result += f"- {label}: {count} bean(s)\n"
         return formatted_result
@@ -74,7 +74,10 @@ agent = FunctionAgent(
     verbose=True,
 )
 
-sample_query = "Can I harvest in coffee bean?."
+sample_query = "Can I harvest this tree? how many beans are there?."
+# sample_query = "What is the maturity level of the coffee beans in this image? Can you analyze it?"
+# sample_query = "What's wrong with my tree?"
+
 sample_image_path = "./sample/IMG_6583-1.jpg"
 
 from llama_index.core.agent.workflow import AgentStream, ToolCallResult
